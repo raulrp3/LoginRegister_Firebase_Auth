@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>RegisterLogin</title>
+	<script src="https://www.gstatic.com/firebasejs/6.0.2/firebase.js"></script>
+  	<script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+	<div id="app">
+		<div v-if="authUser">
+			<h2>Signed as {{authUser.email}} </h2>
+			<button @click="signOut">Sign out</button>
+		</div>
+		<div v-else>
+			<h2>Register</h2>
+			<form @submit.prevent="register">
+				<input type="email" v-model="email" placeholder="Introduce el email">
+				<input type="password" v-model="password">
+				<button>Register</button>
+			</form>
+			<form @submit.prevent="signIn">
+				<input type="email" v-model="email" placeholder="Introduce el email">
+				<input type="password" v-model="password">
+				<button>Sign In</button>
+			</form>
+		</div>
+	</div>
+</body>
+<script>
+
+	var firebaseConfig = {
+		apiKey: "AIzaSyD86Mh8RADANdxcb6cXvFXB5Ivn1FGjtfU",
+		authDomain: "pruebafirebase-4eb3c.firebaseapp.com",
+		databaseURL: "https://pruebafirebase-4eb3c.firebaseio.com",
+		projectId: "pruebafirebase-4eb3c",
+		storageBucket: "pruebafirebase-4eb3c.appspot.com",
+		messagingSenderId: "660062525831",
+		appId: "1:660062525831:web:680b445eb2ed7540"
+	};
+
+	firebase.initializeApp(firebaseConfig);
+
+  	new Vue({
+  		el: "#app",
+  		data: {
+  			email: "",
+  			password: "",
+			authUser: null
+  		},
+  		methods: {
+  			register () {
+        		firebase.auth().createUserWithEmailAndPassword(this.email, this.password);
+      		},
+			signIn(){
+				firebase.auth().signInWithEmailAndPassword(this.email, this.password);
+			},
+			signOut(){
+				firebase.auth().signOut();
+			}
+  		},
+		  created(){
+			  firebase.auth().onAuthStateChanged(user => {this.authUser = user})
+		  }
+  	})
+</script>
+</html>
