@@ -30,6 +30,7 @@
 </body>
 <script>
 
+	//Variables de configuración de FireBase, esto nos lo da el propio FireBase al agregar una aplicación a nuestro proyecto.
 	var firebaseConfig = {
 		apiKey: "AIzaSyD86Mh8RADANdxcb6cXvFXB5Ivn1FGjtfU",
 		authDomain: "pruebafirebase-4eb3c.firebaseapp.com",
@@ -40,6 +41,7 @@
 		appId: "1:660062525831:web:680b445eb2ed7540"
 	};
 
+	//Inicializamos FireBase.
 	firebase.initializeApp(firebaseConfig);
 
   	new Vue({
@@ -50,8 +52,12 @@
 			authUser: null
   		},
   		methods: {
+  			//Función para registrar un usuario.
   			register () {
+  				//Con este método autenticamos el usuario en FireBase.
         		firebase.auth().createUserWithEmailAndPassword(this.email, this.password);
+
+        		//Y con esto guardamos el email de dicho usuario y un rol en nuestra colección en Firestore.
         		firebase.firestore().collection("users").add({
 			  		email: this.email,
 			  		rol: "empleado"
@@ -61,12 +67,19 @@
 			  		console.error("Error writing document: ", error);
 			  	});
       		},
+
+      		//Con este método iniciamos sesión con un usuario.
 			signIn(){
 				firebase.auth().signInWithEmailAndPassword(this.email, this.password);
 			},
+
+			//Con este método cerramos sesión de un usuario.
 			signOut(){
 				firebase.auth().signOut();
 			},
+
+			//Con este método leemos todos los usuarios que hay en nuestra colección users, este método ha sido implementado para cuano
+			//tengamos que sacar el listado de fichajes de todos los usuarios.
 			read(){
 				firebase.firestore().collection("users").get().then(function(querySnapshot){
 					querySnapshot.forEach(function(doc){
@@ -76,9 +89,12 @@
 			}
   		},
 		  created(){
+		  	  //Con este método vemos si el usuario ha cambiado, por ejemplo al iniciar sesión ha cambiado y así podemso mostrar datos de ese usuario.
 			  firebase.auth().onAuthStateChanged(user => {
 			  	this.authUser = user;
 
+			  	//Comprobamos si el usuario ha verificado su email, en caso negativo le enviamos un email para que lo verifique.
+			  	//Este email se puede modificar en la consola de Firebase en plantillas.
 			  	if(this.authUser != null && !this.authUser.emailVerified){
 			  		this.authUser.sendEmailVerification();
 			  	}
