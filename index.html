@@ -11,6 +11,7 @@
 		<div v-if="authUser">
 			<h2>Signed as {{authUser.email}} </h2>
 			<button @click="signOut">Sign out</button>
+			<button @click="read">get users</button>
 		</div>
 		<div v-else>
 			<h2>Register</h2>
@@ -51,16 +52,33 @@
   		methods: {
   			register () {
         		firebase.auth().createUserWithEmailAndPassword(this.email, this.password);
+        		firebase.firestore().collection("users").add({
+			  		email: this.email,
+			  		rol: "empleado"
+			  	}).then(function(){
+			  		console.log("Document successfully written!");
+			  	}).catch(function(error){
+			  		console.error("Error writing document: ", error);
+			  	});
       		},
 			signIn(){
 				firebase.auth().signInWithEmailAndPassword(this.email, this.password);
 			},
 			signOut(){
 				firebase.auth().signOut();
+			},
+			read(){
+				firebase.firestore().collection("users").get().then(function(querySnapshot){
+					querySnapshot.forEach(function(doc){
+						console.log(doc.id, " => ", doc.data().email);
+					});
+				})
 			}
   		},
 		  created(){
-			  firebase.auth().onAuthStateChanged(user => {this.authUser = user})
+			  firebase.auth().onAuthStateChanged(user => {
+			  	this.authUser = user;
+			  });
 		  }
   	})
 </script>
