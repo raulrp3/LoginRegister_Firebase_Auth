@@ -78,6 +78,10 @@
 		  created(){
 			  firebase.auth().onAuthStateChanged(user => {
 			  	this.authUser = user;
+
+			  	if(this.authUser != null && !this.authUser.emailVerified){
+			  		this.authUser.sendEmailVerification();
+			  	}
 			  });
 		  }
   	})
